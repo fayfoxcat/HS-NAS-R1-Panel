@@ -6,7 +6,7 @@
   font-family: 'Emoji';
   src: url('emoji.ttf') format('truetype');
   unicode-range: U+1F4CA, U+1F310, U+1F4BE, U+2699, U+1F6E0,
-                 U+1F433, U+1F5A5, U+26A0, U+1F504, U+23FB;
+                 U+1F433, U+1F5A5, U+26A0, U+1F504, U+23FB, U+1F6AA;
 }
 
 :root {
