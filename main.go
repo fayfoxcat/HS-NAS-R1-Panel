@@ -69,7 +69,6 @@ func startWeb(port int) {
 	mux.HandleFunc("/api/status", internal.HandleStatus)
 	mux.HandleFunc("/api/reboot", internal.HandleReboot)
 	mux.HandleFunc("/api/shutdown", internal.HandleShutdown)
-	mux.HandleFunc("/api/exit", handleExit)
 	mux.HandleFunc("/api/screen/off", internal.HandleScreenOff)
 	mux.HandleFunc("/api/screen/on", internal.HandleScreenOn)
 	mux.Handle("/", http.FileServer(http.FS(frontend)))
@@ -92,18 +91,6 @@ func resolvePort(port int) int {
 		return port
 	}
 	return 40000 + rand.Intn(25535) // 40000-65535
-}
-
-func handleExit(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "POST required", http.StatusMethodNotAllowed)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"status":"exiting"}`))
-	go func() {
-		exec.Command("/usr/bin/pkill", "cog").Run()
-	}()
 }
 
 const serviceUnit = `[Unit]

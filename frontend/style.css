@@ -32,7 +32,7 @@ html, body {
   overflow: hidden;
   background: var(--bg);
   color: var(--txt);
-  font-family: -apple-system, "Segoe UI", "Noto Sans SC", sans-serif;
+  font-family: Emoji, -apple-system, "Segoe UI", "Noto Sans SC", sans-serif;
   font-size: 30px;            /* base unit */
   line-height: 1.25;
   -webkit-tap-highlight-color: transparent;
@@ -212,7 +212,6 @@ html, body {
   font-family: inherit; cursor: pointer;
 }
 .btn:active { filter: brightness(.85); }
-.b-exit     { background: var(--card2); color: var(--txt); border: 1px solid var(--line); }
 .b-reboot   { background: var(--org); color: #000; }
 .b-shutdown { background: var(--red); color: #fff; }
 .b-cancel   { background: var(--card2); color: var(--txt); border: 1px solid var(--line); }
