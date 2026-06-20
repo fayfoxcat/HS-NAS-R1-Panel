@@ -51,30 +51,38 @@ GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o hs-nas-r1-panel .
 
 ### 部署到 NAS
 
-```bash
-# 上传
-scp hs-nas-r1-panel root@nas:/opt/nas-panel/
+**首次部署需安装依赖（仅一次）：**
 
-# NAS 上操作
+```bash
+# 屏幕渲染器 + emoji 字体（NAS 出厂不含，需首次安装）
+apt install cog fonts-noto-color-emoji
+
+# 磁盘健康读取（通常已预装）
+apt install smartmontools
+```
+
+**部署二进制：**
+
+```bash
+scp hs-nas-r1-panel root@nas:/opt/nas-panel/
 ssh root@nas
 chmod +x /opt/nas-panel/hs-nas-r1-panel
 
-# 启动 Web 服务（默认端口 8088）
+# 启动 Web（默认 8088）
 /opt/nas-panel/hs-nas-r1-panel --web
 
 # 指定端口
 /opt/nas-panel/hs-nas-r1-panel --web --port 9090
 
-# 安装开机自启
+# 启动屏幕显示
+cog -P drm http://localhost:8088
+
+# 安装开机自启（同时启动 Web + cog）
 /opt/nas-panel/hs-nas-r1-panel --install
 systemctl enable hs-nas-r1-panel
 
 # 卸载
 /opt/nas-panel/hs-nas-r1-panel --uninstall
-
-# 安装屏幕渲染器（首次）
-apt install cog fonts-noto-color-emoji
-cog -P drm http://localhost:8088
 ```
 
 ### CLI 参数
