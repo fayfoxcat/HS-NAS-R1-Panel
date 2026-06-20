@@ -10,28 +10,22 @@ echo "=== HS-NAS-R1-Panel Install ==="
 echo ""
 
 # 1. Install system dependencies
-echo "[1/4] Installing dependencies..."
+echo "[1/3] Installing dependencies..."
 apt-get update -qq
 apt-get install -y -qq cog smartmontools 2>/dev/null
 
-# 2. Download latest release (fallback: build from source)
-echo "[2/4] Downloading binary..."
+# 2. Download latest release
+echo "[2/3] Downloading binary..."
 mkdir -p /opt/nas-panel
-LATEST=$(curl -sSL "${REPO}/releases/latest/download/hs-nas-r1-panel" -o "${BIN}" 2>/dev/null && echo "ok" || echo "fail")
-if [ "$LATEST" = "fail" ]; then
-    echo "  No pre-built release, building from source..."
-    if ! command -v go &>/dev/null; then
-        apt-get install -y -qq golang-go 2>/dev/null || {
-            echo "ERROR: Go not available and no pre-built binary found."
-            exit 1
-        }
-    fi
-    TMP=$(mktemp -d)
-    git clone "${REPO}.git" "${TMP}" 2>/dev/null
-    cd "${TMP}"
-    GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o "${BIN}" .
-    rm -rf "${TMP}"
-fi
+curl -sSL "${REPO}/releases/latest/download/hs-nas-r1-panel" -o "${BIN}" 2>/dev/null || {
+    echo "ERROR: No pre-built binary found."
+    echo "Build manually and upload:"
+    echo "  git clone ${REPO}.git"
+    echo "  cd HS-NAS-R1-Panel"
+    echo "  GOOS=linux GOARCH=amd64 go build -ldflags=\"-s -w\" -o hs-nas-r1-panel ."
+    echo "  scp hs-nas-r1-panel root@nas:/opt/nas-panel/"
+    exit 1
+}
 chmod +x "${BIN}"
 
 # 3. Install systemd service (headless by default)
