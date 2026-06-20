@@ -78,21 +78,18 @@ scp hs-nas-r1-panel root@nas:/opt/nas-panel/
 ssh root@nas
 chmod +x /opt/nas-panel/hs-nas-r1-panel
 
-# 启动 Web（默认 8088）
-/opt/nas-panel/hs-nas-r1-panel --web
+# 直接运行（随机端口，仅本机可访问 + 屏幕显示）
+/opt/nas-panel/hs-nas-r1-panel
 
-# 指定端口
-/opt/nas-panel/hs-nas-r1-panel --web --port 9090
+# 指定端口，开放外部访问
+/opt/nas-panel/hs-nas-r1-panel -p 8088
 
-# 启动屏幕显示
-cog -P drm http://localhost:8088
-
-# 安装开机自启（headless）
+# 安装开机自启（默认随机端口 + 屏幕自启）
 /opt/nas-panel/hs-nas-r1-panel --install
-
-# 安装开机自启（含 Web 服务 + 端口）
-/opt/nas-panel/hs-nas-r1-panel --install --web --port 8088
 systemctl enable hs-nas-r1-panel
+
+# 安装开机自启（开放外部访问）
+/opt/nas-panel/hs-nas-r1-panel --install -p 8088
 
 # 卸载
 /opt/nas-panel/hs-nas-r1-panel --uninstall
@@ -102,10 +99,10 @@ systemctl enable hs-nas-r1-panel
 
 | 参数 | 说明 |
 |------|------|
-| `--web` | 启动 Web 服务 |
-| `--port 8088` | 指定端口（默认 8088） |
-| `--install` | 安装 systemd 服务（headless） |
-| `--install --web` | 安装 systemd 服务并含 Web |
+| `-p 8088` | 指定端口，监听 0.0.0.0（可外部访问） |
+| (无 `-p`) | 随机 5 位端口，仅回环地址（外部不可达） |
+| `--install` | 安装 systemd 服务 + 屏幕自启 |
+| `--install -p 8088` | 安装 systemd 服务，开放外部访问 |
 | `--uninstall` | 移除 systemd 服务并终止进程 |
 
 不带参数运行显示帮助信息。

@@ -28,19 +28,17 @@ curl -sSL "${REPO}/releases/latest/download/hs-nas-r1-panel" -o "${BIN}" 2>/dev/
 }
 chmod +x "${BIN}"
 
-# 3. Install systemd service (headless by default)
+# 3. Install systemd service
 echo "[3/3] Installing systemd service..."
 "${BIN}" --install
 systemctl enable hs-nas-r1-panel 2>/dev/null || true
+systemctl start hs-nas-r1-panel 2>/dev/null || true
 
 echo ""
 echo "=== Done ==="
-echo "  Service installed (headless). To enable web dashboard:"
-echo "    ${BIN} --install --web"
-echo "    systemctl restart hs-nas-r1-panel"
-echo "  Web:  http://$(hostname -I | awk '{print $1}'):8088"
+echo "  Service installed (random loopback port, screen auto-start)."
+echo "  For network access: ${BIN} --install -p 8088"
 echo ""
 echo "  Manage:"
 echo "    systemctl stop/start/restart hs-nas-r1-panel"
 echo "    ${BIN} --uninstall"
-echo ""
