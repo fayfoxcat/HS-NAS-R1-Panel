@@ -24,16 +24,31 @@ func main() {
 	uninstall := flag.Bool("uninstall", false, "Remove systemd auto-start service")
 	flag.Parse()
 
-	switch {
-	case *install:
-		installService()
-		fmt.Println("Systemd service installed. Enable with: systemctl enable hs-nas-r1-panel")
-	case *uninstall:
+	any := false
+
+	if *uninstall {
 		uninstallService()
 		fmt.Println("Systemd service removed.")
-	case *web:
+		any = true
+	}
+
+	if *install {
+		installService(*web, *port)
+		if *web {
+			fmt.Printf("Systemd service installed (with --web --port %s).\n", *port)
+		} else {
+			fmt.Println("Systemd service installed (headless, add --web to serve dashboard).")
+		}
+		fmt.Println("Enable with: systemctl enable hs-nas-r1-panel")
+		any = true
+	}
+
+	if *web {
 		startWeb(*port)
-	default:
+		any = true
+	}
+
+	if !any {
 		fmt.Fprintf(os.Stderr, "Usage: %s [flags]\n", filepath.Base(os.Args[0]))
 		flag.PrintDefaults()
 		os.Exit(1)
@@ -50,6 +65,7 @@ func startWeb(port string) {
 	mux.HandleFunc("/api/status", internal.HandleStatus)
 	mux.HandleFunc("/api/reboot", internal.HandleReboot)
 	mux.HandleFunc("/api/shutdown", internal.HandleShutdown)
+	mux.HandleFunc("/api/exit", handleExit)
 	mux.HandleFunc("/api/screen/off", internal.HandleScreenOff)
 	mux.HandleFunc("/api/screen/on", internal.HandleScreenOn)
 	mux.Handle("/", http.FileServer(http.FS(frontend)))
@@ -60,14 +76,25 @@ func startWeb(port string) {
 	}
 }
 
+func handleExit(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "POST required", http.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"status":"exiting"}`))
+	go func() {
+		exec.Command("/usr/bin/pkill", "cog").Run()
+	}()
+}
+
 const serviceUnit = `[Unit]
 Description=HS-NAS-R1 Panel
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=%s --web --port %s
-ExecStartPost=/bin/sh -c "sleep 2; pkill cog 2>/dev/null; setsid cog -P drm http://localhost:8088"
+ExecStart=%s%s
 Restart=always
 RestartSec=5
 
@@ -75,9 +102,13 @@ RestartSec=5
 WantedBy=multi-user.target
 `
 
-func installService() {
+func installService(web bool, port string) {
 	exe, _ := os.Executable()
-	unit := fmt.Sprintf(serviceUnit, exe, "8088")
+	args := ""
+	if web {
+		args = fmt.Sprintf(" --web --port %s", port)
+	}
+	unit := fmt.Sprintf(serviceUnit, exe, args)
 	path := "/etc/systemd/system/hs-nas-r1-panel.service"
 	if err := os.WriteFile(path, []byte(unit), 0644); err != nil {
 		log.Fatalf("Failed to write service file: %v", err)

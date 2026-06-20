@@ -212,6 +212,7 @@ html, body {
   font-family: inherit; cursor: pointer;
 }
 .btn:active { filter: brightness(.85); }
+.b-exit     { background: var(--card2); color: var(--txt); border: 1px solid var(--line); }
 .b-reboot   { background: var(--org); color: #000; }
 .b-shutdown { background: var(--red); color: #fff; }
 .b-cancel   { background: var(--card2); color: var(--txt); border: 1px solid var(--line); }

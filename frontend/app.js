@@ -300,6 +300,9 @@
   $('#b-shutdown').onclick = () => confirm('确定关闭 NAS？\n需手动开机恢复。', () =>
     fetch('/api/shutdown', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"confirm":true}' }).catch(() => {}));
 
+  $('#b-exit').onclick = () => confirm('退出图形界面？\n屏幕将返回终端。', () =>
+    fetch('/api/exit', { method: 'POST' }).catch(() => {}));
+
   // ── Init ──────────────────────────────────────────────
   place(false);
   fetchStatus();
