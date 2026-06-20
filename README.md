@@ -55,15 +55,38 @@ GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o hs-nas-r1-panel .
 # 上传
 scp hs-nas-r1-panel root@nas:/opt/nas-panel/
 
-# NAS 上启动（需要 root 权限以读取 SMART / 操作 DPMS）
+# NAS 上操作
 ssh root@nas
 chmod +x /opt/nas-panel/hs-nas-r1-panel
-/opt/nas-panel/hs-nas-r1-panel
+
+# 启动 Web 服务（默认端口 8088）
+/opt/nas-panel/hs-nas-r1-panel --web
+
+# 指定端口
+/opt/nas-panel/hs-nas-r1-panel --web --port 9090
+
+# 安装开机自启
+/opt/nas-panel/hs-nas-r1-panel --install
+systemctl enable hs-nas-r1-panel
+
+# 卸载
+/opt/nas-panel/hs-nas-r1-panel --uninstall
 
 # 安装屏幕渲染器（首次）
 apt install cog fonts-noto-color-emoji
 cog -P drm http://localhost:8088
 ```
+
+### CLI 参数
+
+| 参数 | 说明 |
+|------|------|
+| `--web` | 启动 Web 服务 |
+| `--port 8088` | 指定端口（默认 8088） |
+| `--install` | 安装 systemd 开机自启服务 |
+| `--uninstall` | 移除 systemd 服务 |
+
+不带参数运行显示帮助信息。
 
 ### 访问
 
