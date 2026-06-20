@@ -295,10 +295,19 @@
   }
 
   // ── Actions ───────────────────────────────────────────
+  function doAction(url, msg) {
+    hide();
+    $('#modal-msg').textContent = msg;
+    $('#modal-bg').classList.add('show');
+    $('#m-cancel').style.display = 'none';
+    $('#m-ok').style.display = 'none';
+    fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"confirm":true}' }).catch(() => {});
+  }
+
   $('#b-reboot').onclick = () => confirm('确定重启 NAS？\n服务将暂时中断。', () =>
-    fetch('/api/reboot', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"confirm":true}' }).catch(() => {}));
+    doAction('/api/reboot', '重启中...'));
   $('#b-shutdown').onclick = () => confirm('确定关闭 NAS？\n需手动开机恢复。', () =>
-    fetch('/api/shutdown', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"confirm":true}' }).catch(() => {}));
+    doAction('/api/shutdown', '关机中...'));
 
   // ── Init ──────────────────────────────────────────────
   place(false);
