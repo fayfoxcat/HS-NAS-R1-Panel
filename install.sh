@@ -3,7 +3,7 @@
 # Usage: curl -sSL https://raw.githubusercontent.com/fayfoxcat/HS-NAS-R1-Panel/master/install.sh | sudo bash
 
 set -euo pipefail
-BIN="/opt/nas-panel/hs-nas-r1-panel"
+BIN="/opt/nas-panel/r1-panel"
 REPO="https://github.com/fayfoxcat/HS-NAS-R1-Panel"
 
 echo "=== HS-NAS-R1-Panel Install ==="
@@ -17,13 +17,13 @@ apt-get install -y -qq cog smartmontools 2>/dev/null
 # 2. Download latest release
 echo "[2/3] Downloading binary..."
 mkdir -p /opt/nas-panel
-curl -sSL "${REPO}/releases/latest/download/hs-nas-r1-panel" -o "${BIN}" 2>/dev/null || {
+curl -sSL "${REPO}/releases/latest/download/r1-panel" -o "${BIN}" 2>/dev/null || {
     echo "ERROR: No pre-built binary found."
     echo "Build manually and upload:"
     echo "  git clone ${REPO}.git"
     echo "  cd HS-NAS-R1-Panel"
-    echo "  GOOS=linux GOARCH=amd64 go build -ldflags=\"-s -w\" -o hs-nas-r1-panel ."
-    echo "  scp hs-nas-r1-panel root@nas:/opt/nas-panel/"
+    echo "  GOOS=linux GOARCH=amd64 go build -ldflags=\"-s -w\" -o r1-panel ."
+    echo "  scp r1-panel root@nas:/opt/nas-panel/"
     exit 1
 }
 chmod +x "${BIN}"

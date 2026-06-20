@@ -28,7 +28,7 @@
 ## 技术架构
 
 ```
-LCD 屏幕 ←──DRM/KMS── cog (WPE Kiosk 浏览器) ←──http://:8088── hs-nas-r1-panel (Go)
+LCD 屏幕 ←──DRM/KMS── cog (WPE Kiosk 浏览器) ←──http://:8088── r1-panel (Go)
                                                                     │
                                               /proc /sys smartctl docker virsh
 ```
@@ -54,7 +54,7 @@ curl -sSL https://raw.githubusercontent.com/fayfoxcat/HS-NAS-R1-Panel/master/ins
 ```bash
 git clone https://github.com/fayfoxcat/HS-NAS-R1-Panel.git
 cd HS-NAS-R1-Panel
-GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o hs-nas-r1-panel .
+GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o r1-panel .
 ```
 
 ### 部署到 NAS
@@ -74,25 +74,25 @@ apt install smartmontools
 **部署二进制：**
 
 ```bash
-scp hs-nas-r1-panel root@nas:/opt/nas-panel/
+scp r1-panel root@nas:/opt/nas-panel/
 ssh root@nas
-chmod +x /opt/nas-panel/hs-nas-r1-panel
+chmod +x /opt/nas-panel/r1-panel
 
 # 直接运行（随机端口，仅本机可访问 + 屏幕显示）
-/opt/nas-panel/hs-nas-r1-panel
+/opt/nas-panel/r1-panel
 
 # 指定端口，开放外部访问
-/opt/nas-panel/hs-nas-r1-panel -p 8088
+/opt/nas-panel/r1-panel -p 8088
 
 # 安装开机自启（默认随机端口 + 屏幕自启）
-/opt/nas-panel/hs-nas-r1-panel --install
-systemctl enable hs-nas-r1-panel
+/opt/nas-panel/r1-panel --install
+systemctl enable r1-panel
 
 # 安装开机自启（开放外部访问）
-/opt/nas-panel/hs-nas-r1-panel --install -p 8088
+/opt/nas-panel/r1-panel --install -p 8088
 
 # 卸载
-/opt/nas-panel/hs-nas-r1-panel --uninstall
+/opt/nas-panel/r1-panel --uninstall
 ```
 
 ### CLI 参数

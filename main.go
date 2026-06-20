@@ -19,7 +19,7 @@ import (
 //go:embed frontend/*
 var frontendFS embed.FS
 
-const portFile = "/tmp/hs-nas-r1-panel.port"
+const portFile = "/tmp/r1-panel.port"
 
 func main() {
 	port := flag.Int("p", 0, "Web server port (0=random loopback)")
@@ -79,7 +79,7 @@ func startWeb(port int) {
 	if port == 0 {
 		addr = fmt.Sprintf("127.0.0.1:%d", p)
 	}
-	log.Printf("HS-NAS-R1 Panel starting on %s", addr)
+	log.Printf("r1-panel starting on %s", addr)
 	os.WriteFile(portFile, []byte(strconv.Itoa(p)), 0644)
 
 	if err := http.ListenAndServe(addr, mux); err != nil {

@@ -19,13 +19,13 @@ jobs:
 
       - name: Build
         run: |
-          GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o hs-nas-r1-panel .
-          ls -lh hs-nas-r1-panel
+          GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o r1-panel .
+          ls -lh r1-panel
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          files: hs-nas-r1-panel
+          files: r1-panel
           body: |
             HS-NAS-R1-Panel ${{ github.ref_name }}
 
