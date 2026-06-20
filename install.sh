@@ -34,22 +34,17 @@ if [ "$LATEST" = "fail" ]; then
 fi
 chmod +x "${BIN}"
 
-# 3. Install systemd service
-echo "[3/4] Installing systemd service..."
+# 3. Install systemd service (headless by default)
+echo "[3/3] Installing systemd service..."
 "${BIN}" --install
 systemctl enable hs-nas-r1-panel 2>/dev/null || true
-systemctl start hs-nas-r1-panel 2>/dev/null || true
-
-# 4. Start screen
-echo "[4/4] Starting screen..."
-pkill cog 2>/dev/null || true
-sleep 1
-setsid cog -P drm http://localhost:8088 >/dev/null 2>&1 </dev/null &
 
 echo ""
 echo "=== Done ==="
+echo "  Service installed (headless). To enable web dashboard:"
+echo "    ${BIN} --install --web"
+echo "    systemctl restart hs-nas-r1-panel"
 echo "  Web:  http://$(hostname -I | awk '{print $1}'):8088"
-echo "  Screen: cog running on framebuffer"
 echo ""
 echo "  Manage:"
 echo "    systemctl stop/start/restart hs-nas-r1-panel"

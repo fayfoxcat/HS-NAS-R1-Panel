@@ -87,10 +87,10 @@ chmod +x /opt/nas-panel/hs-nas-r1-panel
 # 启动屏幕显示
 cog -P drm http://localhost:8088
 
-# 安装开机自启（headless，不含 Web）
+# 安装开机自启（headless）
 /opt/nas-panel/hs-nas-r1-panel --install
 
-# 安装开机自启（含 Web 服务）
+# 安装开机自启（含 Web 服务 + 端口）
 /opt/nas-panel/hs-nas-r1-panel --install --web --port 8088
 systemctl enable hs-nas-r1-panel
 
@@ -104,9 +104,9 @@ systemctl enable hs-nas-r1-panel
 |------|------|
 | `--web` | 启动 Web 服务 |
 | `--port 8088` | 指定端口（默认 8088） |
-| `--install` | 安装 systemd 服务（配合 `--web` 可带 Web） |
-| `--install --web` | 安装 systemd 服务并包含 Web |
-| `--uninstall` | 移除 systemd 服务 |
+| `--install` | 安装 systemd 服务（headless） |
+| `--install --web` | 安装 systemd 服务并含 Web |
+| `--uninstall` | 移除 systemd 服务并终止进程 |
 
 不带参数运行显示帮助信息。
 

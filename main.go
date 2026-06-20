@@ -34,12 +34,16 @@ func main() {
 
 	if *install {
 		installService(*web, *port)
-		fmt.Printf("Systemd service installed (--web --port %s).\n", *port)
+		if *web {
+			fmt.Printf("Systemd service installed (with --web --port %s).\n", *port)
+		} else {
+			fmt.Println("Systemd service installed (headless). Add --web to serve dashboard.")
+		}
 		fmt.Println("Enable with: systemctl enable hs-nas-r1-panel")
 		any = true
 	}
 
-	if *web {
+	if *web && !*install {
 		startWeb(*port)
 		any = true
 	}
@@ -101,7 +105,10 @@ WantedBy=multi-user.target
 
 func installService(web bool, port string) {
 	exe, _ := os.Executable()
-	args := fmt.Sprintf(" --web --port %s", port) // always include web
+	args := ""
+	if web {
+		args = fmt.Sprintf(" --web --port %s", port)
+	}
 	unit := fmt.Sprintf(serviceUnit, exe, args)
 	path := "/etc/systemd/system/hs-nas-r1-panel.service"
 	if err := os.WriteFile(path, []byte(unit), 0644); err != nil {
