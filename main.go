@@ -95,7 +95,7 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=%s%s
-ExecStop=/usr/bin/pkill hs-nas-r1-panel ; /usr/bin/pkill cog
+ExecStop=/usr/bin/pkill cog ; /usr/bin/pkill hs-nas-r1-panel
 Restart=always
 RestartSec=5
 
@@ -122,6 +122,6 @@ func uninstallService() {
 	exec.Command("/usr/bin/systemctl", "disable", "hs-nas-r1-panel").Run()
 	os.Remove("/etc/systemd/system/hs-nas-r1-panel.service")
 	exec.Command("/usr/bin/systemctl", "daemon-reload").Run()
+	exec.Command("/usr/bin/pkill", "cog").Run()             // kill cog first, before we die
 	exec.Command("/usr/bin/pkill", "hs-nas-r1-panel").Run()
-	exec.Command("/usr/bin/pkill", "cog").Run()
 }
