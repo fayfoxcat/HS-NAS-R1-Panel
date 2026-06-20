@@ -34,11 +34,7 @@ func main() {
 
 	if *install {
 		installService(*web, *port)
-		if *web {
-			fmt.Printf("Systemd service installed (with --web --port %s).\n", *port)
-		} else {
-			fmt.Println("Systemd service installed (headless, add --web to serve dashboard).")
-		}
+		fmt.Printf("Systemd service installed (--web --port %s).\n", *port)
 		fmt.Println("Enable with: systemctl enable hs-nas-r1-panel")
 		any = true
 	}
@@ -95,6 +91,7 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=%s%s
+ExecStop=/usr/bin/pkill hs-nas-r1-panel ; /usr/bin/pkill cog
 Restart=always
 RestartSec=5
 
@@ -104,10 +101,7 @@ WantedBy=multi-user.target
 
 func installService(web bool, port string) {
 	exe, _ := os.Executable()
-	args := ""
-	if web {
-		args = fmt.Sprintf(" --web --port %s", port)
-	}
+	args := fmt.Sprintf(" --web --port %s", port) // always include web
 	unit := fmt.Sprintf(serviceUnit, exe, args)
 	path := "/etc/systemd/system/hs-nas-r1-panel.service"
 	if err := os.WriteFile(path, []byte(unit), 0644); err != nil {
@@ -121,4 +115,6 @@ func uninstallService() {
 	exec.Command("/usr/bin/systemctl", "disable", "hs-nas-r1-panel").Run()
 	os.Remove("/etc/systemd/system/hs-nas-r1-panel.service")
 	exec.Command("/usr/bin/systemctl", "daemon-reload").Run()
+	exec.Command("/usr/bin/pkill", "hs-nas-r1-panel").Run()
+	exec.Command("/usr/bin/pkill", "cog").Run()
 }
