@@ -1,11 +1,8 @@
-name: Build
+name: Release
 
 on:
   push:
-    branches: [master]
     tags: ['v*']
-  pull_request:
-    branches: [master]
 
 permissions:
   contents: write
@@ -25,26 +22,11 @@ jobs:
           GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o hs-nas-r1-panel .
           ls -lh hs-nas-r1-panel
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: hs-nas-r1-panel-linux-amd64
-          path: hs-nas-r1-panel
-
-  release:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: hs-nas-r1-panel-linux-amd64
-
-      - run: chmod +x hs-nas-r1-panel
-
-      - uses: softprops/action-gh-release@v2
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
           files: hs-nas-r1-panel
-          generate_release_notes: true
+          body: |
+            HS-NAS-R1-Panel ${{ github.ref_name }}
+
+            `curl -sSL https://raw.githubusercontent.com/fayfoxcat/HS-NAS-R1-Panel/master/install.sh | sudo bash`
