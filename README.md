@@ -41,6 +41,14 @@ LCD 屏幕 ←──DRM/KMS── cog (WPE Kiosk 浏览器) ←──http://:808
 
 ## 快速开始
 
+### 一键安装
+
+```bash
+curl -sSL https://raw.githubusercontent.com/fayfoxcat/HS-NAS-R1-Panel/master/install.sh | sudo bash
+```
+
+脚本自动完成：安装依赖 → 下载/编译二进制 → 配置 systemd 开机自启 → 启动屏幕显示。
+
 ### 编译
 
 ```bash
