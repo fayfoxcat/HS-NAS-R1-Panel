@@ -67,6 +67,7 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=%s --web --port %s
+ExecStartPost=/bin/sh -c "sleep 2; pkill cog 2>/dev/null; setsid cog -P drm http://localhost:8088"
 Restart=always
 RestartSec=5
 
