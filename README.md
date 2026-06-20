@@ -54,12 +54,14 @@ GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o hs-nas-r1-panel .
 **首次部署需安装依赖（仅一次）：**
 
 ```bash
-# 屏幕渲染器 + emoji 字体（NAS 出厂不含，需首次安装）
-apt install cog fonts-noto-color-emoji
+# 屏幕渲染器（NAS 出厂不含）
+apt install cog
 
 # 磁盘健康读取（通常已预装）
 apt install smartmontools
 ```
+
+> Emoji 字体已内嵌在二进制中（15KB 子集），无需额外安装。
 
 **部署二进制：**
 
