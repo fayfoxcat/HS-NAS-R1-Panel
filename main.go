@@ -128,10 +128,10 @@ func installService(port int) {
 	post := ""
 	if port > 0 {
 		args = fmt.Sprintf(" -p %d", port)
-		post = fmt.Sprintf("/bin/sh -c 'sleep 1; /usr/bin/pkill cog; cog -P drm http://localhost:%d'", port)
+		post = fmt.Sprintf("/bin/sh -c 'sleep 1; /usr/bin/pkill cog; setsid cog -P drm http://localhost:%d &'", port)
 	} else {
 		// Random port: ExecStartPost reads the port file and launches cog
-		post = fmt.Sprintf("/bin/sh -c 'sleep 2; PORT=$(cat %s); /usr/bin/pkill cog; cog -P drm http://localhost:$PORT'", portFile)
+		post = fmt.Sprintf("/bin/sh -c 'sleep 2; PORT=$(cat %s); /usr/bin/pkill cog; setsid cog -P drm http://localhost:$PORT &'", portFile)
 	}
 	unit := fmt.Sprintf(serviceUnit, exe, args, post)
 	path := "/etc/systemd/system/hs-nas-r1-panel.service"
