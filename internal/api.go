@@ -42,7 +42,7 @@ func HandleReboot(w http.ResponseWriter, r *http.Request) {
 	exec.Command("/usr/bin/sync").Run()
 	go func() {
 		time.Sleep(200 * time.Millisecond)
-		exec.Command("/bin/systemctl", "reboot", "--force", "--force").Run()
+		exec.Command("/bin/systemctl", "reboot", "--force").Run()
 	}()
 	json.NewEncoder(w).Encode(map[string]string{"status": "rebooting"})
 }
@@ -63,7 +63,7 @@ func HandleShutdown(w http.ResponseWriter, r *http.Request) {
 	exec.Command("/usr/bin/sync").Run()
 	go func() {
 		time.Sleep(200 * time.Millisecond)
-		exec.Command("/bin/systemctl", "poweroff", "--force", "--force").Run()
+		exec.Command("/bin/systemctl", "poweroff", "--force").Run()
 	}()
 	json.NewEncoder(w).Encode(map[string]string{"status": "shutting down"})
 	json.NewEncoder(w).Encode(map[string]string{"status": "shutting down"})
