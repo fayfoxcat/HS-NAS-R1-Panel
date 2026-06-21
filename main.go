@@ -25,9 +25,16 @@ func main() {
 	port := flag.Int("p", 0, "Web server port (0=random loopback)")
 	install := flag.Bool("install", false, "Install systemd auto-start service")
 	uninstall := flag.Bool("uninstall", false, "Remove systemd auto-start service")
+	stop := flag.Bool("stop", false, "Stop running r1-panel and cog")
 	flag.Parse()
 
 	any := false
+
+	if *stop {
+		stopService()
+		fmt.Println("Stopped.")
+		any = true
+	}
 
 	if *uninstall {
 		uninstallService()
@@ -126,6 +133,12 @@ func installService(port int) {
 		log.Fatalf("Failed to write service file: %v", err)
 	}
 	exec.Command("/usr/bin/systemctl", "daemon-reload").Run()
+}
+
+func stopService() {
+	exec.Command("/usr/bin/systemctl", "stop", "hs-nas-r1-panel").Run()
+	exec.Command("/usr/bin/pkill", "cog").Run()
+	exec.Command("/usr/bin/pkill", "r1-panel").Run()
 }
 
 func uninstallService() {
