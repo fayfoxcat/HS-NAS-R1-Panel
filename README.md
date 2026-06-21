@@ -137,6 +137,26 @@ systemctl enable r1-panel
 └── go.mod                  # 零外部依赖
 ```
 
+## FAQ
+
+### 屏幕被 cog 覆盖，如何切回命令行？
+
+cog 只占用 DRM 帧缓冲，虚拟终端不受影响。插 USB 键盘：
+
+```
+Ctrl+Alt+F2   →  切到 tty2，登录修复网络
+Ctrl+Alt+F1   →  切回 tty1（cog 画面还在）
+pkill cog      →  在 tty2 执行，杀掉 cog 释放屏幕
+```
+
+### 一键安装后 cog 灰屏？
+
+cog 可能连着旧的随机端口。重启服务即可：
+
+```bash
+systemctl restart hs-nas-r1-panel
+```
+
 ## License
 
 MIT
