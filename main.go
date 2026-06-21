@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"hs-nas-r1-panel/internal"
 )
@@ -23,44 +24,33 @@ const portFile = "/tmp/r1-panel.port"
 
 func main() {
 	port := flag.Int("p", 0, "Web server port (0=random loopback)")
-	install := flag.Bool("install", false, "Install systemd auto-start service")
-	uninstall := flag.Bool("uninstall", false, "Remove systemd auto-start service")
-	stop := flag.Bool("stop", false, "Stop running r1-panel and cog")
 	flag.Parse()
 
-	any := false
+	cmd := "start"
+	args := flag.Args()
+	if len(args) > 0 {
+		cmd = strings.ToLower(args[0])
+	}
 
-	if *stop {
+	switch cmd {
+	case "start", "run":
+		startWeb(*port)
+	case "stop":
 		stopService()
 		fmt.Println("Stopped.")
-		any = true
-	}
-
-	if *uninstall {
-		uninstallService()
-		fmt.Println("Systemd service removed.")
-		any = true
-	}
-
-	if *install {
+	case "install":
 		installService(*port)
-		fmt.Printf("Systemd service installed.")
 		if *port > 0 {
-			fmt.Printf(" (port %d)\n", *port)
+			fmt.Printf("Service installed (port %d).\n", *port)
 		} else {
-			fmt.Println(" (random port, loopback only)")
+			fmt.Println("Service installed (random port, loopback).")
 		}
-		fmt.Println("Enable with: systemctl enable hs-nas-r1-panel")
-		any = true
-	}
-
-	if !*install && !*uninstall {
-		startWeb(*port)
-		any = true
-	}
-
-	if !any {
-		fmt.Fprintf(os.Stderr, "Usage: %s [flags]\n", filepath.Base(os.Args[0]))
+		fmt.Println("Enable: systemctl enable hs-nas-r1-panel")
+	case "uninstall":
+		uninstallService()
+		fmt.Println("Service removed.")
+	default:
+		fmt.Fprintf(os.Stderr, "Usage: %s [start|stop|install|uninstall] [-p PORT]\n", filepath.Base(os.Args[0]))
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
@@ -80,10 +70,13 @@ func startWeb(port int) {
 	mux.HandleFunc("/api/screen/on", internal.HandleScreenOn)
 	mux.Handle("/", http.FileServer(http.FS(frontend)))
 
-	p := resolvePort(port)
-	addr := fmt.Sprintf("0.0.0.0:%d", p)
-	if port == 0 {
-		addr = fmt.Sprintf("127.0.0.1:%d", p)
+	p := port
+	if p == 0 {
+		p = 40000 + rand.Intn(25535)
+	}
+	addr := fmt.Sprintf("127.0.0.1:%d", p)
+	if port > 0 {
+		addr = fmt.Sprintf("0.0.0.0:%d", p)
 	}
 	log.Printf("r1-panel starting on %s", addr)
 	os.WriteFile(portFile, []byte(strconv.Itoa(p)), 0644)
@@ -91,13 +84,6 @@ func startWeb(port int) {
 	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func resolvePort(port int) int {
-	if port > 0 {
-		return port
-	}
-	return 40000 + rand.Intn(25535) // 40000-65535
 }
 
 const serviceUnit = `[Unit]
@@ -108,7 +94,7 @@ After=network.target
 Type=simple
 ExecStart=%s%s
 ExecStartPost=%s
-ExecStop=/usr/bin/pkill cog ; /usr/bin/pkill hs-nas-r1-panel
+ExecStop=/usr/bin/pkill cog ; /usr/bin/pkill r1-panel
 Restart=always
 RestartSec=5
 
@@ -124,7 +110,6 @@ func installService(port int) {
 		args = fmt.Sprintf(" -p %d", port)
 		post = fmt.Sprintf("/bin/sh -c 'sleep 1; /usr/bin/pkill cog; setsid cog -P drm http://localhost:%d &'", port)
 	} else {
-		// Random port: ExecStartPost reads the port file and launches cog
 		post = fmt.Sprintf("/bin/sh -c 'sleep 2; PORT=$(cat %s); /usr/bin/pkill cog; setsid cog -P drm http://localhost:$PORT &'", portFile)
 	}
 	unit := fmt.Sprintf(serviceUnit, exe, args, post)
@@ -142,10 +127,9 @@ func stopService() {
 }
 
 func uninstallService() {
-	exec.Command("/usr/bin/systemctl", "stop", "hs-nas-r1-panel").Run()
+	stopService()
 	exec.Command("/usr/bin/systemctl", "disable", "hs-nas-r1-panel").Run()
 	os.Remove("/etc/systemd/system/hs-nas-r1-panel.service")
 	exec.Command("/usr/bin/systemctl", "daemon-reload").Run()
-	exec.Command("/usr/bin/pkill", "cog").Run()
-	exec.Command("/usr/bin/pkill", "hs-nas-r1-panel").Run()
+	os.Remove(portFile)
 }

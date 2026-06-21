@@ -85,25 +85,26 @@ chmod +x /opt/nas-panel/r1-panel
 /opt/nas-panel/r1-panel -p 8088
 
 # 安装开机自启（默认随机端口 + 屏幕自启）
-/opt/nas-panel/r1-panel --install
+/opt/nas-panel/r1-panel install
 systemctl enable r1-panel
 
 # 安装开机自启（开放外部访问）
-/opt/nas-panel/r1-panel --install -p 8088
+/opt/nas-panel/r1-panel install -p 8088
 
 # 卸载
-/opt/nas-panel/r1-panel --uninstall
+/opt/nas-panel/r1-panel uninstall
 ```
 
 ### CLI 参数
 
 | 参数 | 说明 |
 |------|------|
-| `-p 8088` | 指定端口，监听 0.0.0.0（可外部访问） |
-| (无 `-p`) | 随机 5 位端口，仅回环地址（外部不可达） |
-| `--install` | 安装 systemd 服务 + 屏幕自启 |
-| `--install -p 8088` | 安装 systemd 服务，开放外部访问 |
-| `--uninstall` | 移除 systemd 服务并终止进程 |
+| `start` | 启动 Web 服务（默认行为） |
+| `start -p 8088` | 启动 Web，端口 8088，开放外部访问 |
+| `stop` | 停止运行中的 r1-panel + cog |
+| `install` | 安装 systemd 服务 + 屏幕自启 |
+| `install -p 8088` | 安装服务并开放外部访问 |
+| `uninstall` | 移除服务并终止进程 |
 
 不带参数运行显示帮助信息。
 
