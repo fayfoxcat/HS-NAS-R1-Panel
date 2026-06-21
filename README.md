@@ -155,7 +155,7 @@ pkill cog      →  在 tty2 执行，杀掉 cog 释放屏幕
 cog 可能连着旧的随机端口。重启服务即可：
 
 ```bash
-systemctl restart hs-nas-r1-panel
+systemctl restart r1-panel
 ```
 
 ## License

@@ -31,8 +31,8 @@ chmod +x "${BIN}"
 # 3. Install systemd service
 echo "[3/3] Installing systemd service..."
 "${BIN}" install
-systemctl enable hs-nas-r1-panel 2>/dev/null || true
-systemctl start hs-nas-r1-panel 2>/dev/null || true
+systemctl enable r1-panel 2>/dev/null || true
+systemctl start r1-panel 2>/dev/null || true
 
 echo ""
 echo "=== Done ==="
@@ -40,5 +40,5 @@ echo "  Service installed (random loopback port, screen auto-start)."
 echo "  For network access: ${BIN} install -p 8088"
 echo ""
 echo "  Manage:"
-echo "    systemctl stop/start/restart hs-nas-r1-panel"
+echo "    systemctl stop/start/restart r1-panel"
 echo "    ${BIN} uninstall"

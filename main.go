@@ -45,7 +45,7 @@ func main() {
 		} else {
 			fmt.Println("Service installed (random port, loopback).")
 		}
-		fmt.Println("Enable: systemctl enable hs-nas-r1-panel")
+		fmt.Println("Enable: systemctl enable r1-panel")
 	case "uninstall":
 		uninstallService()
 		fmt.Println("Service removed.")
@@ -117,7 +117,7 @@ func installService(port int) {
 		post = fmt.Sprintf("/bin/sh -c 'sleep 2; PORT=$(cat %s); /usr/bin/pkill cog; setsid cog -P drm http://localhost:$PORT &'", portFile)
 	}
 	unit := fmt.Sprintf(serviceUnit, exe, args, post)
-	path := "/etc/systemd/system/hs-nas-r1-panel.service"
+	path := "/etc/systemd/system/r1-panel.service"
 	if err := os.WriteFile(path, []byte(unit), 0644); err != nil {
 		log.Fatalf("Failed to write service file: %v", err)
 	}
@@ -125,15 +125,15 @@ func installService(port int) {
 }
 
 func stopService() {
-	exec.Command("/usr/bin/systemctl", "stop", "hs-nas-r1-panel").Run()
+	exec.Command("/usr/bin/systemctl", "stop", "r1-panel").Run()
 	exec.Command("/usr/bin/pkill", "cog").Run()
 	exec.Command("/usr/bin/pkill", "r1-panel").Run()
 }
 
 func uninstallService() {
 	stopService()
-	exec.Command("/usr/bin/systemctl", "disable", "hs-nas-r1-panel").Run()
-	os.Remove("/etc/systemd/system/hs-nas-r1-panel.service")
+	exec.Command("/usr/bin/systemctl", "disable", "r1-panel").Run()
+	os.Remove("/etc/systemd/system/r1-panel.service")
 	exec.Command("/usr/bin/systemctl", "daemon-reload").Run()
 	os.Remove(portFile)
 }
