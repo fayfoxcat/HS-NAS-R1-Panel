@@ -126,7 +126,7 @@
   function confirm(msg, fn) { $('#modal-msg').textContent = msg; cb = fn; $('#modal-bg').classList.add('show'); }
   function hide() { $('#modal-bg').classList.remove('show'); cb = null; }
   $('#m-cancel').onclick = hide;
-  $('#m-ok').onclick = () => { hide(); if (cb) cb(); };
+  $('#m-ok').onclick = () => { var fn = cb; hide(); if (fn) fn(); };
   $('#modal-bg').onclick = (e) => { if (e.target.id === 'modal-bg') hide(); };
 
   // ── Format ────────────────────────────────────────────
