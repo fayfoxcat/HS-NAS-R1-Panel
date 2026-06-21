@@ -79,6 +79,10 @@ func startWeb(port int) {
 		addr = fmt.Sprintf("0.0.0.0:%d", p)
 	}
 	log.Printf("r1-panel starting on %s", addr)
+	if port == 0 {
+		log.Printf("Screen: cog -P drm http://localhost:%d", p)
+	}
+	log.Printf("Run in background: r1-panel &")
 	os.WriteFile(portFile, []byte(strconv.Itoa(p)), 0644)
 
 	if err := http.ListenAndServe(addr, mux); err != nil {
