@@ -6,20 +6,20 @@ set -euo pipefail
 BIN="/opt/nas-panel/r1-panel"
 REPO="https://github.com/fayfoxcat/HS-NAS-R1-Panel"
 
-echo "=== HS-NAS-R1-Panel Install ==="
+echo "=== HS-NAS-R1-Panel 一键安装 ==="
 echo ""
 
-# 1. Install system dependencies
-echo "[1/3] Installing dependencies..."
+# 1. 安装系统依赖
+echo "[1/3] 安装依赖..."
 apt-get update -qq
 apt-get install -y -qq cog smartmontools 2>/dev/null
 
-# 2. Download latest release
-echo "[2/3] Downloading binary..."
+# 2. 下载最新版本
+echo "[2/3] 下载二进制..."
 mkdir -p /opt/nas-panel
 curl -sSL "${REPO}/releases/latest/download/r1-panel" -o "${BIN}" 2>/dev/null || {
-    echo "ERROR: No pre-built binary found."
-    echo "Build manually and upload:"
+    echo "错误：未找到预编译二进制。"
+    echo "手动编译并上传："
     echo "  git clone ${REPO}.git"
     echo "  cd HS-NAS-R1-Panel"
     echo "  GOOS=linux GOARCH=amd64 go build -ldflags=\"-s -w\" -o r1-panel ."
@@ -28,17 +28,17 @@ curl -sSL "${REPO}/releases/latest/download/r1-panel" -o "${BIN}" 2>/dev/null ||
 }
 chmod +x "${BIN}"
 
-# 3. Install systemd service
-echo "[3/3] Installing systemd service..."
+# 3. 安装 systemd 服务
+echo "[3/3] 安装系统服务..."
 "${BIN}" install
 systemctl enable r1-panel 2>/dev/null || true
 systemctl start r1-panel 2>/dev/null || true
 
 echo ""
-echo "=== Done ==="
-echo "  Service installed (random loopback port, screen auto-start)."
-echo "  For network access: ${BIN} install -p 8088"
+echo "=== 安装完成 ==="
+echo "  服务已安装（随机端口，仅回环地址，屏幕自启）。"
+echo "  如需局域网访问：${BIN} install -p 8088"
 echo ""
-echo "  Manage:"
+echo "  管理命令："
 echo "    systemctl stop/start/restart r1-panel"
 echo "    ${BIN} uninstall"
