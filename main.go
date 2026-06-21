@@ -33,6 +33,8 @@ func main() {
 	}
 
 	switch cmd {
+	case "help", "-h", "--help":
+		printUsage()
 	case "start", "run":
 		startWeb(*port)
 	case "stop":
@@ -50,10 +52,21 @@ func main() {
 		uninstallService()
 		fmt.Println("Service removed.")
 	default:
-		fmt.Fprintf(os.Stderr, "Usage: %s [start|stop|install|uninstall] [-p PORT]\n", filepath.Base(os.Args[0]))
-		flag.PrintDefaults()
+		printUsage()
 		os.Exit(1)
 	}
+}
+
+func printUsage() {
+	fmt.Printf("Usage: %s <command> [-p PORT]\n\n", filepath.Base(os.Args[0]))
+	fmt.Print("Commands:\n")
+	fmt.Print("  start      Start web server (default)\n")
+	fmt.Print("  stop       Stop running processes\n")
+	fmt.Print("  install    Install systemd auto-start service\n")
+	fmt.Print("  uninstall  Remove service and stop\n")
+	fmt.Print("  help       Show this help\n")
+	fmt.Print("\nFlags:\n")
+	fmt.Print("  -p PORT    Listen on 0.0.0.0:PORT (default: random loopback)\n")
 }
 
 func startWeb(port int) {
