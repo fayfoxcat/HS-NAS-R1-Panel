@@ -47,7 +47,7 @@ func main() {
 		any = true
 	}
 
-	if !*install {
+	if !*install && !*uninstall {
 		startWeb(*port)
 		any = true
 	}
